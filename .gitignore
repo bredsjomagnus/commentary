@@ -1,0 +1,8 @@
+/.bin
+/build
+/vendor
+/config/database.php
+/config/anaxdatabase.php
+/htdocs
+memory::
+composer.lock
