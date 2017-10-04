@@ -24,6 +24,15 @@ Copy
 - config/route.php
 - config/route/commentary
 
+Match routes
+- admin/admincontent.php for view of articles.
+- admin/admincreatecontent.php for create article.
+- admin/adminupdatecontent.php for update article.
+
+Needs user to be logged in.
+- username not null unique
+- email not null unique
+
 License
 ------------------
 

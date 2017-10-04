@@ -198,7 +198,7 @@ class CommController implements InjectionAwareInterface
         $data = [
             "contents" => $article->findAll(),
         ];
-        $view->add("commentary/allarticles", $data);
+        $view->add("admin/admincontent", $data);
         $pageRender->renderPage(["title" => $title]);
     }
 
@@ -220,7 +220,7 @@ class CommController implements InjectionAwareInterface
             "form" => $form->getHTML(),
         ];
 
-        $view->add("commentary/createarticle", $data);
+        $view->add("admin/admincreatecontent", $data);
 
         $pageRender->renderPage(["title" => $title]);
     }
@@ -243,7 +243,7 @@ class CommController implements InjectionAwareInterface
             "form" => $form->getHTML(),
         ];
 
-        $view->add("commentary/update", $data);
+        $view->add("admin/adminupdatecontent", $data);
 
         $pageRender->renderPage(["title" => $title]);
     }
