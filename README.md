@@ -1,7 +1,7 @@
 Maaa16 Commentary for Anax
 ==================================
 
-[![Latest Stable Version](https://poser.pugx.org/anax/commentary/v/stable)](https://packagist.org/packages/anax/commentary)
+[![Latest Stable Version](https://poser.pugx.org/maaa16/commentary/v/stable)](https://packagist.org/packages/maaa16/commentary)
 [![Join the chat at https://gitter.im/mosbth/anax](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/bredsjomagnus?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/bredsjomagnus/commentary.svg?branch=master)](https://travis-ci.org/bredsjomagnus/commentary)
 [![Build Status](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/badges/build.png?b=master)](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/build-status/master)
