@@ -44,4 +44,3 @@ This software carries a MIT license.
  .  
 ..:  Copyright (c) 2017 Magnus Andersson (magnusandersson076@gmail.com)
 ```
-# commentary
