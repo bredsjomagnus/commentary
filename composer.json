@@ -36,6 +36,7 @@
         "anax/response": "^1.0",
         "anax/view": "^1.0",
         "anax/configure": "^1.0",
-        "anax/page": "^1.0"
+        "anax/page": "^1.0",
+        "symfony/yaml": "^3.3",
     }
 }
