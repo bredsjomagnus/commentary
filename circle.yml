@@ -7,7 +7,7 @@ machine:
 test:
     pre:
     - make install
-    # - make check
+    - make check
 
     override:
     - make test
