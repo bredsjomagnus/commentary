@@ -121,4 +121,71 @@ class CommentaryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($likedvalid, true);
     }
+
+    public function testGetLikersUsernames()
+    {
+        $di  = new \Anax\DI\DIFactoryConfig("di.php");
+
+        // Commentary
+        $comm = new \Maaa16\Commentary\Commentary();
+        $comm->setDI($di);
+
+        $db = new \Anax\Database\DatabaseQueryBuilder();
+        $db->configure("databaseconfig.php");
+        $db->connect();
+
+        $usernames = $comm->getLikersUsernames([1]);
+        $usernamesarray = explode(", ", $usernames);
+
+        $likeuservalid = in_array('testuser', $usernamesarray);
+
+        $this->assertEquals($likeuservalid, true);
+    }
+
+    public function testDeleteComment()
+    {
+        $di  = new \Anax\DI\DIFactoryConfig("di.php");
+
+        // Commentary
+        $comm = new \Maaa16\Commentary\Commentary();
+        $comm->setDI($di);
+
+        $db = new \Anax\Database\DatabaseQueryBuilder();
+        $db->configure("databaseconfig.php");
+        $db->connect();
+
+        $sql = "SELECT COUNT(*) AS numbrows, id FROM ramverk1comments";
+        $res = $db->executeFetchAll($sql);
+        $numbrows = $res[0]->numbrows;
+        $lastid = $res[0]->id;
+
+        $comm->deleteComment($lastid);
+
+        $sql = "SELECT COUNT(*) AS numbrows FROM ramverk1comments";
+        $res = $db->executeFetchAll($sql);
+        $newnumberrows = $res[0]->numbrows;
+
+        $diffnumber = intval($numbrows) - intval($newnumberrows);
+
+        $this->assertEquals($diffnumber, 1);
+    }
+
+    public function testGetComments()
+    {
+        $di  = new \Anax\DI\DIFactoryConfig("di.php");
+
+        // Commentary
+        $comm = new \Maaa16\Commentary\Commentary();
+        $comm->setDI($di);
+
+        $db = new \Anax\Database\DatabaseQueryBuilder();
+        $db->configure("databaseconfig.php");
+        $db->connect();
+
+        $res = $comm->getComments(1);
+
+        $username = $res[0]->username;
+
+        $this->assertEquals($username, 'user');
+    }
 }
