@@ -176,7 +176,6 @@ class CommController implements InjectionAwareInterface
         ];
 
         $view->add("commentary/article", $data);
-
         $this->di->get("pageRender")->renderPage(["title" => $title]);
     }
 
