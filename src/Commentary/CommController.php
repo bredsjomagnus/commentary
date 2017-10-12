@@ -6,7 +6,6 @@ use \Anax\DI\InjectionAwareInterface;
 use \Anax\DI\InjectionAwareTrait;
 use \Maaa16\Commentary\HTMLForm\CreateArticleForm;
 use \Maaa16\Commentary\HTMLForm\UpdateArticleForm;
-use \Maaa16\Commentary\HTMLForm\DeleteArticleForm;
 
 /**
  * A controller for the Commentary.

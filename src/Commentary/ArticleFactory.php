@@ -78,7 +78,7 @@ class ArticleFactory implements InjectionAwareInterface
     * @param boolean $link is link choosen
     * @param boolean $nl2br is nl2br choosen
     *
-    * @return array $blogfilter with correct filters in correct order.
+    * @return string $blogfilter with correct filters in correct order.
     */
     public function getFilters($markdown, $bbcode, $link, $nl2br)
     {

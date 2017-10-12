@@ -14,7 +14,7 @@ class UpdateArticleForm extends FormModel
     /**
      * Constructor injects with DI container and the id to update.
      *
-     * @param Anax\DI\DIInterface $di a service container
+     * @param \Anax\DI\DIInterface $di a service container
      * @param integer             $id to update
      */
     public function __construct(DIInterface $di, $id)
