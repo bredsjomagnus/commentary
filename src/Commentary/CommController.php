@@ -24,6 +24,7 @@ class CommController implements InjectionAwareInterface
      */
     public function commentarypage()
     {
+        $textfilter     = $this->di->get("textfilter");
         // $path = $this->di->get("request")->getRoute();
         $file = ANAX_INSTALL_PATH . "/content/commentary/index.md";
 
@@ -36,7 +37,7 @@ class CommController implements InjectionAwareInterface
 
         // Get content from markdown file
         $content = file_get_contents($file);
-        $content = $this->di->get("textfilter")->parse($content, ["yamlfrontmatter", "shortcode", "markdown", "titlefromheader"]);
+        $content = $textfilter->parse($content, ["yamlfrontmatter", "shortcode", "markdown", "titlefromheader"]);
 
         // Render a standard page using layout
         $this->di->get("view")->add("default1/article", [
@@ -70,7 +71,7 @@ class CommController implements InjectionAwareInterface
             if (strlen(trim($comment))) {
                 $this->di->get("comm")->addComment($commentOn, $username, $email, $comment);
             }
-        } else if (null !== $this->di->get("request")->getPost("resetdbbtn")) {
+        } elseif (null !== $this->di->get("request")->getPost("resetdbbtn")) {
             $this->di->get("comm")->resetComment();
         }
         // $this->commentarypage();
@@ -84,34 +85,20 @@ class CommController implements InjectionAwareInterface
      */
     public function editComment()
     {
+        $view       = $this->di->get("view");
         if (null !== $this->di->get("request")->getGet("id")) {
             $path = $this->di->get("request")->getGet("path");
             $id = $this->di->get("request")->getGet("id");
             $res = $this->di->get("comm")->editCommentLoad($id);
 
-            // $path = $this->di->get("request")->getRoute();
-            // $file = ANAX_INSTALL_PATH . "/content/editcomment.md";
-            // // Check that file is really in the right place
-            // $real = realpath($file);
-            // $base = realpath(ANAX_INSTALL_PATH . "/content/");
-            // if (strncmp($base, $real, strlen($base))) {
-            //     return;
-            // }
-            //
-            // // Get content from markdown file
-            // $content = file_get_contents($file);
-            // $content = $this->di->get("textfilter")->parse($content, ["yamlfrontmatter", "shortcode", "markdown", "titlefromheader"]);
-            //
-            // // Render a standard page using layout
-            // $this->di->get("view")->add("default1/article", [
-            //     "content" => $content->text
-            // ]);
+            $data = [
+                "comment" => $res[0]->comm,
+                "email" => $res[0]->email,
+                "id" => $res[0]->id,
+                "path" => $path
+            ];
 
-            // Hämta comments från databasen och montera ihop tabell som skickas vidare till vyn.
-            // $comments = $this->app->comm->getComment($this->app);
-            // $comments = $this->app->commAssembler->assemble($this->app, $res);
-
-            $this->di->get("view")->add("commentary/editcomment", ["comment" => $res[0]->comm, "email" => $res[0]->email, "id" => $res[0]->id, "path" => $path]);
+            $view->add("commentary/editcomment", $data);
             // $this->app->view->add("commentary/comments", ["comments" => $comments], "comments");
             $title = "redigera kommentar | Maaa16";
             $this->di->get("pageRender")->renderPage(["title" => $title], "commentary");
@@ -137,7 +124,7 @@ class CommController implements InjectionAwareInterface
             } else {
                 $this->di->get("comm")->deleteComment($id);
             }
-        } else if (null !== $this->di->get("request")->getPost("deletecommentbtn")) {
+        } elseif (null !== $this->di->get("request")->getPost("deletecommentbtn")) {
             $id = $this->di->get("request")->getPost("id");
             $this->di->get("comm")->deleteComment($id);
         }
@@ -157,7 +144,7 @@ class CommController implements InjectionAwareInterface
     public function addLikeProcess()
     {
         $path = $this->di->get("request")->getGet("path");
-        // Om användaren stämmer med vad som skickas. Så att ingen annan via url kan 'Gilla' kommentar som annan användare
+        // Om användaren stämmer med vad som skickas. Så att ingen annan via url kan 'Gilla' kommentar som annan user.
         if ($this->di->get("session")->get('userid') == $this->di->get("request")->getGet("userid")) {
             // Om det finns ifylld id för comment
             if (null !== $this->di->get("request")->getGet("commentid")) {
@@ -171,13 +158,24 @@ class CommController implements InjectionAwareInterface
 
     public function articleCommentary($path)
     {
+        $view       = $this->di->get("view");
         $id = $this->di->get("articleFactory")->getId($path);
         $title = "testkommentarer";
         $comments = $this->di->get("comm")->getComments($id);
         $form = $this->di->get("commAssembler")->getForm($id, $path);
         $filtereddata = $this->di->get("articleFactory")->getFilteredHTML($id);
         $hasComments = ($comments == null) ? false : true;
-        $this->di->get("view")->add("commentary/article", ["article" => $filtereddata, "form" => $form, "comments" => $comments, "hasComments" => $hasComments, "path" => $path, "id" => $id]);
+
+        $data = [
+            "article" => $filtereddata,
+            "form" => $form,
+            "comments" => $comments,
+            "hasComments" => $hasComments,
+            "path" => $path,
+            "id" => $id
+        ];
+
+        $view->add("commentary/article", $data);
 
         $this->di->get("pageRender")->renderPage(["title" => $title]);
     }

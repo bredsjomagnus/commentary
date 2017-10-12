@@ -101,7 +101,19 @@ class Commentary implements InjectionAwareInterface
         $this->di->get("db")->connect();
         $sql = "DROP TABLE IF EXISTS ramverk1comments";
         $this->di->get("db")->execute($sql);
-        $sql = "CREATE TABLE IF NOT EXISTS ramverk1comments (id INT AUTO_INCREMENT NOT NULL, created TIMESTAMP DEFAULT CURRENT_TIMESTAMP, edited TIMESTAMP NULL, username varchar(100) NOT NULL default 'NA', email varchar(200) NOT NULL default 'na@email.com', comm VARCHAR(1000), likes VARCHAR(1000) DEFAULT '', PRIMARY KEY  (id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+        $sql = "CREATE TABLE IF NOT EXISTS ramverk1comments
+                (
+                    id INT AUTO_INCREMENT NOT NULL,
+                    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    edited TIMESTAMP NULL,
+                    username varchar(100) NOT NULL default 'NA',
+                    email varchar(200) NOT NULL default 'na@email.com',
+                    comm VARCHAR(1000),
+                    likes VARCHAR(1000) DEFAULT '',
+                    PRIMARY KEY  (id)
+                ) 
+                    DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+
         $this->di->get("db")->execute($sql);
     }
 

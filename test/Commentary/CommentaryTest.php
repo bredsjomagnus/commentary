@@ -9,34 +9,53 @@ class CommentaryTest extends \PHPUnit_Framework_TestCase
     /**
      * Test case Commentary
      */
-    public function testCommInsert()
+    // public function testCommInsert()
+    // {
+    //     // DI
+    //     $di  = new \Anax\DI\DIFactoryConfig("di.php");
+    //
+    //     // Commentary
+    //     $comm = new \Maaa16\Commentary\Commentary();
+    //     $comm->setDI($di);
+    //
+    //     // Get comments before change
+    //     $resbefore = $comm->getComment();
+    //     $numberbefore = count($resbefore);
+    //
+    //     // insert one comment
+    //     $commentOn = 1;
+    //     $username = 'user';
+    //     $email = 'user@email.com';
+    //     $comment = 'En kommentar';
+    //     $comm->addComment($commentOn, $username, $email, $comment);
+    //
+    //     // Get comments before change
+    //     $resafter = $comm->getComment();
+    //     $numberafter = count($resafter);
+    //
+    //     // Differense numberafter - numberbefore
+    //     $diffnumber = intval($numberafter) - intval($numberbefore);
+    //
+    //     // Kollar att differensen mellan antalet är 1
+    //     $this->assertEquals($diffnumber, 1);
+    // }
+
+    public function testSlugify()
     {
-        // DI
-        $di  = new \Anax\DI\DIFactoryConfig("di.php");
+        $di         = new \Anax\DI\DIFactoryConfig("di.php");
+        $artfact    = $di->get("articleFactory");
 
-        // Commentary
-        $comm = new \Maaa16\Commentary\Commentary();
-        $comm->setDI($di);
+        //-------------------------------------------------------
 
-        // Get comments before change
-        $resbefore = $comm->getComment();
-        $numberbefore = count($resbefore);
+        $inputslug   = "åäö åäö";
+        // $inputslugtwo   = "åäö åäö"
+        // $outputslugone  = "aao aao";
+        // $outputslugtwo  = "aao aao2";
 
-        // insert one comment
-        $commentOn = 1;
-        $username = 'user';
-        $email = 'user@email.com';
-        $comment = 'En kommentar';
-        $comm->addComment($commentOn, $username, $email, $comment);
+        $outputslugone = $artfact->slugify($inputslug);
+        // $outputslugtwo = $artfact->slugify($inputslug);
 
-        // Get comments before change
-        $resafter = $comm->getComment();
-        $numberafter = count($resafter);
-
-        // Differense numberafter - numberbefore
-        $diffnumber = intval($numberafter) - intval($numberbefore);
-
-        // Kollar att differensen mellan antalet är 1
-        $this->assertEquals($diffnumber, 1);
+        $this->assertEquals($outputslugone, "aaoaao");
+        // $this->assertEquals($outputslugtwo, "aaoaao2");
     }
 }

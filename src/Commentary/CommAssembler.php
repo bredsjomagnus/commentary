@@ -19,6 +19,10 @@ class CommAssembler implements InjectionAwareInterface
     */
     public function assemble($comments)
     {
+        $url        = $this->di->get("url");
+        $session    = $this->di->get("session");
+        $comm       = $this->di->get("comm");
+
         $table = "";
         $table = "<table class='commenttable'>";
         $table .=   "<thead>
@@ -39,12 +43,13 @@ class CommAssembler implements InjectionAwareInterface
             $commentlikes = explode(",", $comment->likes);
 
             $likeanswereditline = "";
-            if ($this->di->get("session")->get('email') == $comment->email) {
-                $editcommenturl = $this->di->get("url")->create("editcomment") ."?id=". $comment->id;
+            if ($session->get('email') == $comment->email) {
+                $editcommenturl = $url->create("editcomment") ."?id=". $comment->id;
                 $likeanswereditline = "<a href='".$editcommenturl."'>redigera</a>";
-            } else if ($this->di->get("session")->has('user')) {
-                $addlikeprocessurl = $this->di->get("url")->create("addlikeprocess")."?userid=".$this->di->get("session")->get('userid')."&commentid=".$comment->id;
-                if (!in_array($this->di->get("session")->get('userid'), $commentlikes)) {
+            } elseif ($this->di->get("session")->has('user')) {
+                $addlikeprocessurl  = $url->create("addlikeprocess");
+                $addlikeprocessurl .= "?userid=".$session->get('userid')."&commentid=".$comment->id;
+                if (!in_array($session->get('userid'), $commentlikes)) {
                     $likeanswereditline = "<a href='".$addlikeprocessurl."'>Gilla</a>&nbsp&nbsp&nbsp";
                 } else {
                     $likeanswereditline = "<span>Gilla</span>&nbsp&nbsp&nbsp";
@@ -61,8 +66,9 @@ class CommAssembler implements InjectionAwareInterface
             $numberlikes = "";
             $likersusernames = "";
             if (count($commentlikes) > 0 && $commentlikes[0] != "") {
-                $likersusernames = $this->di->get("comm")->getLikersUsernames($commentlikes);
-                $numberlikes = "<div class='likecircle' data-toggle='tooltip' data-placement='right' title='".$likersusernames."'>+".count($commentlikes)."</div>";
+                $likersusernames = $comm->getLikersUsernames($commentlikes);
+                $numberlikes  = "<div class='likecircle' data-toggle='tooltip' data-placement='right'";
+                $numberlikes .= "title='".$likersusernames."'>+".count($commentlikes)."</div>";
             }
 
             // <td>".$gravatar->toHTML()."</td>
@@ -83,7 +89,9 @@ class CommAssembler implements InjectionAwareInterface
                         </tr>
                         <tr>
                             <td class='commentaryunderline'></td>
-                            <td class='text-muted commentaryunderline'><i>".$comment->created."&nbsp&nbsp&nbsp".$comment->username.", ".$comment->email."</i></td>
+                            <td class='text-muted commentaryunderline'>
+                                <i>".$comment->created."&nbsp&nbsp&nbsp".$comment->username.", ".$comment->email."</i>
+                            </td>
                         </tr>";
         }
         $table .=   "</tbody>
@@ -96,7 +104,8 @@ class CommAssembler implements InjectionAwareInterface
         $addcommenturl = $this->di->get("url")->create("addcomment")."?path=".$path;
         $disabled = $this->di->get("session")->has('user') ? "" : "disabled";
         $form =     "<form action='".$addcommenturl."' method='POST'>
-            <textarea rows='4' cols='200' name='comment' value='' placeholder='Skriv kommentar här!' ".$disabled."></textarea><br />
+            <textarea rows='4' cols='200' name='comment' value='' placeholder='Skriv kommentar här!' ".$disabled.">
+            </textarea><br />
             <input type='hidden' name='username' value='".$this->di->get("session")->get('user', "")."'>
             <input type='hidden' name='email' value='".$this->di->get("session")->get('email', "")."'>
             <input type='hidden' name='article' value='".$id."'>
