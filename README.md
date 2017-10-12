@@ -1,20 +1,25 @@
 Maaa16 Commentary for Anax
 ==================================
-####Packagist
+*Packagist*
+
 [![Latest Stable Version](https://poser.pugx.org/maaa16/commentary/v/stable)](https://packagist.org/packages/maaa16/commentary)
 
-####Travis
+*Travis*
+
 [![Build Status](https://travis-ci.org/bredsjomagnus/commentary.svg?branch=master)](https://travis-ci.org/bredsjomagnus/commentary)
 
-####Scrutinizer
+*Scrutinizer*
+
 [![Build Status](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/badges/build.png?b=master)](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/build-status/master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/?branch=master)
 
-####SensioLabsInsight
+*SensioLabsInsight*
+
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/e94befd9-dbeb-41f9-8914-09aecae28eec/mini.png)](https://insight.sensiolabs.com/projects/e94befd9-dbeb-41f9-8914-09aecae28eec)
 
-####CircleCI
+*CircleCI*
+
 [![CircleCI](https://circleci.com/gh/bredsjomagnus/commentary.svg?style=svg)](https://circleci.com/gh/bredsjomagnus/commentary)
 
 <!-- [![SensioLabsInsight](https://insight.sensiolabs.com/projects/d831fd4c-b7c6-4ff0-9a83-102440af8929/mini.png)](https://insight.sensiolabs.com/projects/d831fd4c-b7c6-4ff0-9a83-102440af8929) -->
