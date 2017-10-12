@@ -3,6 +3,7 @@
 /vendor
 /config/database.php
 /config/anaxdatabase.php
+/config/databaseconfig.php
 /htdocs
 memory::
 composer.lock

@@ -8,7 +8,7 @@ define("ANAX_APP_PATH", ANAX_INSTALL_PATH);
 /**
  * Sample configuration file for test configuration.
  */
-require ANAX_INSTALL_PATH . "/config/databaseconfig.php";
+// require ANAX_INSTALL_PATH . "/config/databaseconfig.php";
 
 /**
  * Include autoloader.
