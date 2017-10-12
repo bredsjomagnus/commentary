@@ -5,7 +5,6 @@ namespace Maaa16\Commentary;
 use \Anax\DI\InjectionAwareInterface;
 use \Anax\DI\InjectionAwareTrait;
 
-
 /**
  * Commentary
  */
@@ -18,7 +17,7 @@ class Commentary implements InjectionAwareInterface
     /**
      * @var array $session inject a reference to the session.
      */
-    private $session;
+    // private $session;
 
 
 

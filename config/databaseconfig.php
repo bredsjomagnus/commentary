@@ -12,21 +12,21 @@
  *  "dsn" => "sqlite:memory::",
  *
  */
- 
-    $dbconfig = [
-            "dsn"             => "mysql:host=host;dbname=databasename;",
-            "username"        => "username",
-            "password"        => "password",
-            "driver_options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'"],
-            "fetch_mode"      => \PDO::FETCH_OBJ,
-            "table_prefix"    => null,
-            "session_key"     => "Anax\Database",
 
-            // True to be very verbose during development
-            "verbose"         => true,
+$dbconfig = [
+        "dsn"             => "mysql:host=host;dbname=databasename;",
+        "username"        => "username",
+        "password"        => "password",
+        "driver_options"  => [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8'"],
+        "fetch_mode"      => \PDO::FETCH_OBJ,
+        "table_prefix"    => null,
+        "session_key"     => "Anax\Database",
 
-            // True to be verbose on connection failed
-            "debug_connect"   => true,
-        ];
+        // True to be very verbose during development
+        "verbose"         => true,
+
+        // True to be verbose on connection failed
+        "debug_connect"   => true,
+    ];
 
 return $dbconfig;

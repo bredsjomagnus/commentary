@@ -247,9 +247,4 @@ class CommController implements InjectionAwareInterface
 
         $pageRender->renderPage(["title" => $title]);
     }
-
-
-
-
-
 }
