@@ -188,4 +188,38 @@ class CommentaryTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($username, 'user');
     }
+
+    public function testAssemble()
+    {
+        $di  = new \Anax\DI\DIFactoryConfig("di.php");
+
+        // Commentary
+        $comm = new \Maaa16\Commentary\Commentary();
+        $comm->setDI($di);
+
+        $commAssembler = new \Maaa16\Commentary\CommAssembler();
+        $commAssembler->setDI($di);
+
+        $db = new \Anax\Database\DatabaseQueryBuilder();
+        $db->configure("databaseconfig.php");
+        $db->connect();
+
+        $comments = $comm->getComment();
+
+        $table = $commAssembler->assemble($comments);
+
+        $this->assertContains("<table class='commenttable'>", $table);
+    }
+
+    public function testGetForm()
+    {
+        $di  = new \Anax\DI\DIFactoryConfig("di.php");
+
+        $commAssembler = new \Maaa16\Commentary\CommAssembler();
+        $commAssembler->setDI($di);
+
+        $form = $commAssembler->getForm(1, 'path');
+
+        $this->assertContains("</form>", $form);
+    }
 }
