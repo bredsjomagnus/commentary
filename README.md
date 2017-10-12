@@ -8,7 +8,7 @@ Maaa16 Commentary for Anax
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/bredsjomagnus/commentary/?branch=master)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/d831fd4c-b7c6-4ff0-9a83-102440af8929/mini.png)](https://insight.sensiolabs.com/projects/d831fd4c-b7c6-4ff0-9a83-102440af8929)
-
+[![CircleCI](https://circleci.com/gh/bredsjomagnus/commentary.svg?style=svg)](https://circleci.com/gh/bredsjomagnus/commentary)
 <!-- [![Latest Stable Version](https://poser.pugx.org/anax/mall/v/stable)](https://packagist.org/packages/anax/mall)
 [![Join the chat at https://gitter.im/mosbth/anax](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/canax?utm_source=badg$ -->
 

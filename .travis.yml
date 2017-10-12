@@ -41,7 +41,7 @@ before_script:
 
 
 script:
-    - make check
+    # - make check
     - make test
 
 
