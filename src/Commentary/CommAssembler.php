@@ -23,7 +23,6 @@ class CommAssembler implements InjectionAwareInterface
         $session    = $this->di->get("session");
         $comm       = $this->di->get("comm");
 
-        $table = "";
         $table = "<table class='commenttable'>";
         $table .=   "<thead>
                         <tr>
