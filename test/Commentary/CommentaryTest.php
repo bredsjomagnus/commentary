@@ -58,4 +58,67 @@ class CommentaryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($outputslugone, "aaoaao");
         // $this->assertEquals($outputslugtwo, "aaoaao2");
     }
+
+    public function testEditCommentLoad()
+    {
+        $di  = new \Anax\DI\DIFactoryConfig("di.php");
+
+        // Commentary
+        $comm = new \Maaa16\Commentary\Commentary();
+        $comm->setDI($di);
+
+        // Get comments before change
+        $res = $comm->editCommentLoad(1);
+        $numberrows = count($res);
+
+        // Kollar att differensen mellan antalet är 1
+        $this->assertEquals($numberrows, 1);
+    }
+
+    public function testEditCommentSave()
+    {
+        $di  = new \Anax\DI\DIFactoryConfig("di.php");
+
+        // Commentary
+        $comm = new \Maaa16\Commentary\Commentary();
+        $comm->setDI($di);
+
+        $db = new \Anax\Database\DatabaseQueryBuilder();
+        $db->configure("databaseconfig.php");
+        $db->connect();
+
+        // Get comments before change
+        $res = $comm->editCommentSave(1, 'ny testkommentar');
+
+        $sql = "SELECT * FROM ramverk1comments WHERE id = 1";
+        $res = $db->executeFetchAll($sql);
+
+        $testcomment = $res[0]->comm;
+        // Kollar att differensen mellan antalet är 1
+        $this->assertEquals($testcomment, 'ny testkommentar');
+    }
+
+    public function testAddLike()
+    {
+        $di  = new \Anax\DI\DIFactoryConfig("di.php");
+
+        // Commentary
+        $comm = new \Maaa16\Commentary\Commentary();
+        $comm->setDI($di);
+
+        $db = new \Anax\Database\DatabaseQueryBuilder();
+        $db->configure("databaseconfig.php");
+        $db->connect();
+
+        $comm->addLike(1, 2);
+
+        $sql = "SELECT * FROM ramverk1comments WHERE id = 2";
+
+        $res = $db->executeFetchAll($sql);
+        $likedby = $res[0]->likes;
+        $likedby = explode(",", $likedby);
+        $likedvalid = in_array('1', $likedby);
+
+        $this->assertEquals($likedvalid, true);
+    }
 }
