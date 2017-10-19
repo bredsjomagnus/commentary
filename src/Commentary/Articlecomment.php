@@ -7,12 +7,12 @@ use \Anax\Database\ActiveRecordModel;
 /**
  * A database driven model.
  */
-class Article extends ActiveRecordModel
+class Articlecomment extends ActiveRecordModel
 {
     /**
      * @var string $tableName name of the database table.
      */
-    protected $tableName = "RVIXarticle";
+    protected $tableName = "RVIXarticlecomment";
 
     /**
      * Columns in the table.
@@ -20,15 +20,9 @@ class Article extends ActiveRecordModel
      * @var integer $id primary key auto incremented.
      */
     public $id;
-    public $path;
-    public $slug;
-    public $tags;
-    public $title;
+    public $commentto;
+    public $user;
     public $data;
-    public $type;
-    public $filter;
-    public $status;
-    public $published;
     public $created;
     public $updated;
     public $deleted;

@@ -98,19 +98,23 @@ class CommAssembler implements InjectionAwareInterface
         return $table;
     }
 
-    public function getForm($id, $path)
+    public function getForm($id)
     {
-        $addcommenturl = $this->di->get("url")->create("addcomment")."?path=".$path;
-        $disabled = $this->di->get("session")->has('user') ? "" : "disabled";
-        $form =     "<form action='".$addcommenturl."' method='POST'>
-            <textarea rows='4' cols='200' name='comment' value='' placeholder='Skriv kommentar här!' ".$disabled.">
-            </textarea><br />
-            <input type='hidden' name='username' value='".$this->di->get("session")->get('user', "")."'>
-            <input type='hidden' name='email' value='".$this->di->get("session")->get('email', "")."'>
-            <input type='hidden' name='article' value='".$id."'>
-            <input type='submit' name='commentbtn' value='Lägg kommentar' ".$disabled.">
-            <input type='submit' name='resetdbbtn' value='Rensa databas på kommentarer' ".$disabled.">
-        </form>";
+        $session    = $this->di->get("session");
+        $url        = $this->di->get("url");
+
+        $addcommenturl  = $url->create("commentary/addanswerprocess")."?id=".$id;
+        $disabled       = $session->has('user') ? "" : "disabled";
+
+
+        $form = "<form action='".$addcommenturl."' method='POST'>
+                    <textarea style='padding: 5px;' class='form-control' name='data' value='' data-provide='markdown' placeholder='Skriv svar här!' ".$disabled."></textarea>
+                    <br />
+                    <input type='hidden' name='user' value='".$session->get("userid")."'>
+                    <input type='hidden' name='answerto' value='".$id."'>
+                    <input class='btn btn-default' type='submit' name='addanswerbtn' value='Lägg till svar' ".$disabled.">
+                </form>";
+                // <input type='submit' name='resetdbbtn' value='Rensa databas på kommentarer' ".$disabled.">
         return $form;
     }
 }

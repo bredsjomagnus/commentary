@@ -15,14 +15,50 @@ class ArticleFactory implements InjectionAwareInterface
      *
      * @return str the formatted slug.
      */
-    public function slugify($str)
+    public function slugify($str, $unique = true)
     {
         $str = mb_strtolower(trim($str));
         $str = str_replace(array('å','ä','ö'), array('a','a','o'), $str);
         $str = preg_replace('/[^a-z0-9-]/', '', $str);
         $str = trim(preg_replace('/-+/', '', $str), '');
-        $slug = $this->makeSlugUnique(strlen($str), $str);
-        return $slug;
+        if($unique) {
+            $str = $this->makeSlugUnique(strlen($str), $str);
+        }
+        return $str;
+    }
+
+    /**
+     * Create a slug of a string, to be used as url.
+     *
+     * @param string $str the string to format as slug.
+     *
+     * @return str the formatted slug.
+     */
+    public function slugifytagpath($str)
+    {
+        $str = mb_strtolower(trim($str));
+        $str = str_replace(array('å','ä','ö'), array('a','a','o'), $str);
+        $str = preg_replace('/[^a-z0-9-]/', '', $str);
+        $str = trim(preg_replace('/-+/', '', $str), '');
+        $str = $this->makeTagpathUnique(strlen($str), $str);
+
+        return $str;
+    }
+
+    /**
+     * Create a slug of a string, to be used as tag. Allowing å, ä and ö.
+     *
+     * @param string $str the string to format as slug.
+     *
+     * @return str the formatted slug.
+     */
+    public function slugifytagnameUTF8($str)
+    {
+        $str = mb_strtolower(trim($str));
+        // $str = str_replace(array('å','ä','ö'), array('a','a','o'), $str);
+        $str = preg_replace('/[^åäöa-z0-9-]/', '', $str);
+        $str = trim(preg_replace('/-+/', '', $str), '');
+        return $str;
     }
 
     /**
@@ -37,7 +73,7 @@ class ArticleFactory implements InjectionAwareInterface
     {
         $counter = 2;
         $this->di->get("db")->connect();
-        $sql = "SELECT slug FROM RV1content WHERE slug = ?";
+        $sql = "SELECT slug FROM RVIXarticle WHERE slug = ?";
         while ($this->di->get("db")->executeFetchAll($sql, [$slug])) {
             if (strlen($slug) == $sluglength) {
                 $slug = $slug ."".$counter."";
@@ -47,7 +83,32 @@ class ArticleFactory implements InjectionAwareInterface
             }
             $counter += 1;
         }
+        return $slug;
+    }
 
+    /**
+    * See to it that every slug is unique
+    *
+    * @param integer $sluglength length of slug
+    * @param string $slug the slug it self
+    *
+    * @return string $slug a unique slug
+    */
+    public function makeTagpathUnique($sluglength, $slug)
+    {
+        $this->di->get("db")->connect();
+        $counter = 2;
+
+        $sql = "SELECT tagpath FROM RVIXtags WHERE tagpath = ?";
+        while ($this->di->get("db")->executeFetchAll($sql, [$slug])) {
+            if (strlen($slug) == $sluglength) {
+                $slug = $slug ."".$counter."";
+            } else {
+                $slug = substr($slug, 0, $sluglength);
+                $slug = $slug ."".$counter."";
+            }
+            $counter += 1;
+        }
         return $slug;
     }
 
@@ -62,7 +123,7 @@ class ArticleFactory implements InjectionAwareInterface
     */
     public function checkPath($path, $id)
     {
-        $sql = "SELECT path FROM RV1content WHERE path = ? AND NOT id = ?";
+        $sql = "SELECT path FROM RVIXarticle WHERE path = ? AND NOT id = ?";
         if ($this->di->get("db")->executeFetchAll($sql, [$path, $id])) {
             $path = null;
         }
@@ -78,7 +139,7 @@ class ArticleFactory implements InjectionAwareInterface
     * @param boolean $link is link choosen
     * @param boolean $nl2br is nl2br choosen
     *
-    * @return string $blogfilter with correct filters in correct order.
+    * @return array $blogfilter with correct filters in correct order.
     */
     public function getFilters($markdown, $bbcode, $link, $nl2br)
     {
@@ -101,14 +162,20 @@ class ArticleFactory implements InjectionAwareInterface
         return $blogfilter;
     }
 
-    public function getFilteredHTML($id)
+    public function getArticle($id)
     {
         $article = new Article();
         $article->setDb($this->di->get("db"));
         $article->find("id", $id);
         // $article->find("status", "published");
-        $filteredData = $this->di->get("textfilter")->parse($article->data, ["markdown"]);
-        return $filteredData;
+        $articledata = $this->di->get("textfilter")->parse($article->data, ["markdown"]);
+
+        $articledata = [
+            "article"       => $article,
+            "articledata"   => $articledata,
+        ];
+
+        return $articledata;
     }
 
     public function getId($slug)

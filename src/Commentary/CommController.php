@@ -6,6 +6,8 @@ use \Anax\DI\InjectionAwareInterface;
 use \Anax\DI\InjectionAwareTrait;
 use \Maaa16\Commentary\HTMLForm\CreateArticleForm;
 use \Maaa16\Commentary\HTMLForm\UpdateArticleForm;
+use \Maaa16\Commentary\HTMLForm\DeleteArticleForm;
+use \Maaa16\Commentary\HTMLForm\UpdateAnswerForm;
 
 /**
  * A controller for the Commentary.
@@ -21,61 +23,556 @@ class CommController implements InjectionAwareInterface
      *
      * @return void
      */
-    public function commentarypage()
+    public function overview()
     {
+        $title          = "Översikt | Allt om jakt";
         $textfilter     = $this->di->get("textfilter");
-        // $path = $this->di->get("request")->getRoute();
-        $file = ANAX_INSTALL_PATH . "/content/commentary/index.md";
+        $comm           = $this->di->get("comm");
 
-        // Check that file is really in the right place
-        $real = realpath($file);
-        $base = realpath(ANAX_INSTALL_PATH . "/content/");
-        if (strncmp($base, $real, strlen($base))) {
-            return;
-        }
+        //-----------------------------------------------------------
 
-        // Get content from markdown file
-        $content = file_get_contents($file);
-        $content = $textfilter->parse($content, ["yamlfrontmatter", "shortcode", "markdown", "titlefromheader"]);
+        // ['id' => id, 'user' => user, 'title' => title, 'tags' => tags, 'created' => created]
+        // $articles       = $comm->getArticlesArray($tagpath);
+        // $tag            = ($tagpath == 'alla') ? 'Alla' : $comm->getTag($tagpath);
+        $tagbar         = $comm->getTagBar('5');
 
-        // Render a standard page using layout
-        $this->di->get("view")->add("default1/article", [
-            "content" => $content->text
-        ]);
+        $data = [
+            // "articles"      => $articles,
+            // "tag"           => $tag,
+            "tagbar"        => $tagbar,
+        ];
 
-        // Hämta comments från databasen och montera ihop tabell som skickas vidare till vyn.
-        $comments = $this->di->get("comm")->getComment();
-        $comments = $this->di->get("commAssembler")->assemble($comments);
-
-        $this->di->get("view")->add("commentary/formfield", [], "formfield");
-        $this->di->get("view")->add("commentary/comments", ["comments" => $comments], "comments");
-
-        $this->di->get("pageRender")->renderPage($content->frontmatter, "commentary", 200);
+        $this->di->get("view")->add("commentary/overview", $data);
+        $this->di->get("pageRender")->renderPage(["title" => $title]);
     }
+
+    /**
+     * Commetnarypage.
+     *
+     * @return void
+     */
+    public function articles($tagpath)
+    {
+        $title          = "Frågor | Allt om spel";
+        $textfilter     = $this->di->get("textfilter");
+        $comm           = $this->di->get("comm");
+
+        //-----------------------------------------------------------
+
+        // ['id' => id, 'user' => user, 'title' => title, 'tags' => tags, 'created' => created]
+        $articles       = $comm->getArticlesArray($tagpath);
+        $tag            = ($tagpath == 'alla') ? 'Alla' : $comm->getTag($tagpath);
+        $tagbar         = $comm->getTagBar('5');
+
+        $data = [
+            "articles"      => $articles,
+            "tag"           => $tag,
+            "tagbar"        => $tagbar,
+        ];
+
+        $this->di->get("view")->add("commentary/articles", $data);
+        $this->di->get("pageRender")->renderPage(["title" => $title]);
+    }
+
+    public function articlePage($id)
+    {
+        $title          = "Fråga | Allt om brädspel";
+        $view           = $this->di->get("view");
+        $artFact        = $this->di->get("articleFactory");
+        $commAss        = $this->di->get("commAssembler");
+        $comm           = $this->di->get("comm");
+        $session        = $this->di->get("session");
+
+        //------------------------------------------------------
+
+        //-- return ["article" => dbobj, "aritcledata" => markdown filtered data] --//
+        $article                    = $artFact->getArticle($id);
+
+        //-- menu with tags --//
+        $tagbar                     = $comm->getTagBar('5');
+
+        //-- return html form --//
+        $form                       = $commAss->getForm($id);
+
+        //-- return dbobj --//
+        $answers                    = $comm->getAnswers($id);
+        $hasAnswers                 = empty($answers) ? false : true;
+
+        //-- return dbobj --//
+        $articlecomments            = $comm->getArticleComments($id);
+        $hasArticleComments         = empty($articlecomments) ? false : true;
+
+        //-- return dbobj --//
+        $answercomments             = $comm->getAnswerComments($id);
+
+        //-- return dbobj all votes on this article with id = $id --//
+        $articlevotes               = $comm->getArticlevotes($id);
+
+        //-- return boolean --//
+        $ownarticle                 = $comm->ownArticle($id);
+
+        //-- return boolean --//
+        $hasvotedonarticle          = $comm->userHasVotedOnArticle($id);
+
+        //-- sum of article votes --//
+        $articlevotesum             = $comm->getArticleVoteSum($id);
+
+        $totnumbofarticlevotes      = $comm->getTotNumbOfAricleVotes($id);
+
+        //-- return dbobj of answers for this article with articleid = $id --//
+        $answervotes                = $comm->getAnswervotes($id);
+
+        //------------------------------------------------------
+
+        $data = [
+            "article"                   => $article,
+            "form"                      => $form,
+            "answers"                   => $answers,
+            "hasAnswers"                => $hasAnswers,
+            "articlecomments"           => $articlecomments,
+            "hasArticleComments"        => $hasArticleComments,
+            "answercomments"            => $answercomments,
+            "tagbar"                    => $tagbar,
+            "articlevotes"              => $articlevotes,
+            "ownarticle"                => $ownarticle,
+            "hasvotedonarticle"         => $hasvotedonarticle,
+            "articlevotesum"            => $articlevotesum,
+            "articlevotesum"            => $articlevotesum,
+            "totnumbofarticlevotes"     => $totnumbofarticlevotes,
+            "answervotes"               => $answervotes,
+        ];
+
+        $view->add("commentary/article", $data);
+        $this->di->get("pageRender")->renderPage(["title" => $title]);
+    }
+
+    public function addAnswerProcess()
+    {
+        $request    = $this->di->get("request");
+        $response   = $this->di->get("response");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            if (null !== $request->getPost("addanswerbtn")) {
+                $articleid      = $request->getPost('answerto');
+
+                $answerdata = [
+                    "answerto"  => htmlentities($request->getPost('answerto')),
+                    "user"      => htmlentities($request->getPost('user')),
+                    "data"      => htmlentities($request->getPost('data')),
+                ];
+
+
+
+                if($comm->notEmpty($answerdata)){
+                    $comm->addAnswer($answerdata);
+                }
+
+                $response->redirect("commentary/article/".$articleid);
+            }
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+    public function addArticleCommentProcess()
+    {
+        $request    = $this->di->get("request");
+        $response   = $this->di->get("response");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            if (null !== $request->getPost("addarticlecommentbtn")) {
+                $articleid      = $request->getPost('commentto');
+
+                $articlecommentdata = [
+                    "commentto" => htmlentities($request->getPost('commentto')),
+                    "user"      => htmlentities($request->getPost('user')),
+                    "data"      => htmlentities($request->getPost('data')),
+                ];
+
+                if($comm->notEmpty($articlecommentdata)){
+                    $comm->addArticleComment($articlecommentdata);
+                }
+
+                $response->redirect("commentary/article/".$articleid);
+            }
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+
+    public function addAnswerCommentProcess()
+    {
+        $request    = $this->di->get("request");
+        $response   = $this->di->get("response");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            if (null !== $request->getPost("addanswercommentbtn")) {
+                $articleid      = $request->getPost('articleid');
+
+                $answercommentdata = [
+                    "articleid" => htmlentities($request->getPost('articleid')),
+                    "commentto" => htmlentities($request->getPost('commentto')),
+                    "user"      => htmlentities($request->getPost('user')),
+                    "data"      => htmlentities($request->getPost('data')),
+                ];
+
+                if ($comm->notEmpty($answercommentdata)) {
+                    $comm->addAnswerComment($answercommentdata);
+                }
+
+                $response->redirect("commentary/article/".$articleid);
+            }
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+    public function userInfo($id)
+    {
+        $title      = "Användare | Allt om brädspel";
+        $view       = $this->di->get("view");
+        $pagerender = $this->di->get("pageRender");
+        $response   = $this->di->get("response");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            $articleview        = $comm->getArticleView($id);
+            $answerview         = $comm->getAnswerView($id);
+            $tagbar             = $comm->getTagBar('5');
+
+            $data = [
+                "articleview"   => $articleview,
+                "answerview"   => $answerview,
+                "uid"           => $id,
+                "tagbar"        => $tagbar,
+            ];
+
+            $this->di->get("view")->add("commentary/userinfo", $data);
+            $this->di->get("pageRender")->renderPage(["title" => $title]);
+
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+
+    public function voteArticleProcess($articleid)
+    {
+        $response   = $this->di->get("response");
+        $request    = $this->di->get("request");
+        $artFact    = $this->di->get("articleFactory");
+        $session    = $this->di->get("session");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            $article            = $artFact->getArticle($articleid);
+
+            $authorid           = $article['article']->user;
+            $voterid            = $session->get("userid");
+
+            $vote               = ($request->getGet('vote') === 'up') ? 1 : -1;
+
+            $votedata = array();
+            $votedata = [
+                "articleid"     => $articleid,
+                "authorid"      => $authorid,
+                "voterid"       => $voterid,
+                "vote"          => $vote,
+            ];
+
+            $comm->voteArticle($votedata);
+            $response->redirect("commentary/article/".$articleid);
+
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+    public function voteArticleCommentProcess($articleid)
+    {
+        $response   = $this->di->get("response");
+        $request    = $this->di->get("request");
+        $artFact    = $this->di->get("articleFactory");
+        $session    = $this->di->get("session");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            $voterid            = $session->get("userid");
+            $articlecommentid   = ($request->getGet('articlecommentid') != null) ? htmlentities($request->getGet('articlecommentid')) : null;
+            $vote               = ($request->getGet('vote') === 'up') ? 1 : -1;
+
+            $session->set("vote", $request->getGet('vote'));
+            $authorid           = $comm->getArticleCommentsAuthor($articlecommentid);
+
+            $votedata = array();
+            $votedata = [
+                "articleid"         => $articleid,
+                "articlecommentid"  => $articlecommentid,
+                "authorid"          => $authorid,
+                "voterid"           => $voterid,
+                "vote"              => $vote,
+            ];
+
+            if ($comm->notEmpty($votedata)) {
+                $comm->voteArticleComment($votedata);
+            }
+
+            $response->redirect("commentary/article/".$articleid);
+
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+    public function cancelArticleCommentVoteProcess($articleid)
+    {
+        $response   = $this->di->get("response");
+        $request    = $this->di->get("request");
+        $session    = $this->di->get("session");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            $articlecommentid   = ($request->getGet('articlecommentid') != null) ? htmlentities($request->getGet('articlecommentid')) : null;
+            $voterid            = $session->get("userid");
+
+            $votedata = array();
+            $votedata = [
+                "articlecommentid"  => $articlecommentid,
+                "voterid"           => $voterid,
+            ];
+
+            if ($comm->notEmpty($votedata)) {
+                $comm->cancelVoteArticleComment($votedata);
+            }
+
+            $response->redirect("commentary/article/".$articleid);
+
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+
+    public function voteAnswerProcess($articleid)
+    {
+        $response   = $this->di->get("response");
+        $request    = $this->di->get("request");
+        $artFact    = $this->di->get("articleFactory");
+        $session    = $this->di->get("session");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            /*
+            * Samla in vote (up eller down), answerid, authorid för att kunna lägga
+            * in i RVIXanswervotes
+            */
+            $vote               = ($request->getGet('vote') === 'up') ? 1 : -1;
+            $answerid           = ($request->getGet('answerid') != null) ? htmlentities($request->getGet('answerid')) : null;
+            $authorid           = ($request->getGet('authorid') != null) ? htmlentities($request->getGet('authorid')) : null;
+
+            $voterid            = $session->get("userid");
+
+            $votedata = array();
+            $votedata = [
+                "articleid"     => $articleid,
+                "answerid"      => $answerid,
+                "authorid"      => $authorid,
+                "voterid"       => $voterid,
+                "vote"          => $vote,
+            ];
+
+            $session->delete("answervotedata");
+            if ($comm->notEmpty($votedata)) {
+                $session->set("answervotedata", $votedata);
+                $comm->voteAnswer($votedata);
+            }
+
+
+
+            $response->redirect("commentary/article/".$articleid);
+
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+    public function voteAnswerCommentProcess($articleid)
+    {
+        $response   = $this->di->get("response");
+        $request    = $this->di->get("request");
+        $artFact    = $this->di->get("articleFactory");
+        $session    = $this->di->get("session");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            $voterid            = $session->get("userid");
+            $answerid           = ($request->getGet('answerid') != null) ? htmlentities($request->getGet('answerid')) : null;
+            $answercommentid    = ($request->getGet('answercommentid') != null) ? htmlentities($request->getGet('answercommentid')) : null;
+            $vote               = ($request->getGet('vote') === 'up') ? 1 : -1;
+
+            $authorid           = $comm->getAnswerCommentsAuthor($answercommentid);
+
+            $votedata = array();
+            $votedata = [
+                "articleid"         => $articleid,
+                "answerid"          => $answerid,
+                "answercommentid"   => $answercommentid,
+                "authorid"          => $authorid,
+                "voterid"           => $voterid,
+                "vote"              => $vote,
+            ];
+
+            if ($comm->notEmpty($votedata)) {
+                $comm->voteAnswerComment($votedata);
+            }
+
+            $response->redirect("commentary/article/".$articleid);
+
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+    public function cancelAnswerCommentVoteProcess($articleid)
+    {
+        $response   = $this->di->get("response");
+        $request    = $this->di->get("request");
+        $session    = $this->di->get("session");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            $answercommentid   = ($request->getGet('answercommentid') != null) ? htmlentities($request->getGet('answercommentid')) : null;
+            $voterid            = $session->get("userid");
+
+            $votedata = array();
+            $votedata = [
+                "answercommentid"  => $answercommentid,
+                "voterid"           => $voterid,
+            ];
+
+
+
+            if ($comm->notEmpty($votedata)) {
+                $comm->cancelVoteAnswerComment($votedata);
+            }
+
+            $response->redirect("commentary/article/".$articleid);
+
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+
+    public function cancelArticleVoteProcess($articleid)
+    {
+        $response   = $this->di->get("response");
+        $session    = $this->di->get("session");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+
+            $voterid            = $session->get("userid");
+
+            $votedata = array();
+            $votedata = [
+                "articleid"     => $articleid,
+                "voterid"       => $voterid,
+            ];
+
+            $comm->cancelVoteArticle($votedata);
+            $response->redirect("commentary/article/".$articleid);
+
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+
+    public function cancelAnswerVoteProcess($articleid)
+    {
+        $response   = $this->di->get("response");
+        $request    = $this->di->get("request");
+        $session    = $this->di->get("session");
+        $comm       = $this->di->get("comm");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            $answerid           = ($request->getGet('answerid') != null) ? htmlentities($request->getGet('answerid')) : null;
+            $voterid            = $session->get("userid");
+
+            $votedata = array();
+            $votedata = [
+                "answerid"      => $answerid,
+                "voterid"       => $voterid,
+            ];
+
+            if ($comm->notEmpty($votedata)) {
+                $comm->cancelVoteAnswer($votedata);
+            }
+
+            $response->redirect("commentary/article/".$articleid);
+
+        } else {
+            $response->redirect("login");
+        }
+    }
+
 
     /**
      * Add comment to page
      *
      * @return void
      */
-    public function addComment()
-    {
-        if (null !== $this->di->get("request")->getPost("commentbtn")) {
-            $commentOn = $this->di->get("request")->getPost("article");
-            $comment = $this->di->get("request")->getPost("comment");
-            $username = $this->di->get("request")->getPost("username");
-            $email = $this->di->get("request")->getPost("email");
-            $path = $this->di->get("request")->getGet("path");
-            // Kontroll om textarean är tom innan den läggs till.
-            if (strlen(trim($comment))) {
-                $this->di->get("comm")->addComment($commentOn, $username, $email, $comment);
-            }
-        } elseif (null !== $this->di->get("request")->getPost("resetdbbtn")) {
-            $this->di->get("comm")->resetComment();
-        }
-        // $this->commentarypage();
-        $this->di->get("response")->redirect("article/".$path);
-    }
+    // public function addComment()
+    // {
+    //     if ($this->checkUserRole()) {
+    //         if (null !== $this->di->get("request")->getPost("commentbtn")) {
+    //             $commentOn = $this->di->get("request")->getPost("article");
+    //             $comment = $this->di->get("request")->getPost("comment");
+    //             $username = $this->di->get("request")->getPost("username");
+    //             $email = $this->di->get("request")->getPost("email");
+    //             $path = $this->di->get("request")->getGet("path");
+    //             // Kontroll om textarean är tom innan den läggs till.
+    //             if (strlen(trim($comment))) {
+    //                 $this->di->get("comm")->addComment($commentOn, $username, $email, $comment);
+    //             }
+    //         } elseif (null !== $this->di->get("request")->getPost("resetdbbtn")) {
+    //             $this->di->get("comm")->resetComment();
+    //         }
+    //         // $this->commentarypage();
+    //         $this->di->get("response")->redirect("article/".$path);
+    //     } else {
+    //         $this->di->get("response")->redirect("login");
+    //     }
+    // }
 
     /**
      * Edit comment
@@ -155,28 +652,7 @@ class CommController implements InjectionAwareInterface
         $this->di->get("response")->redirect("article/".$path);
     }
 
-    public function articleCommentary($path)
-    {
-        $view       = $this->di->get("view");
-        $id = $this->di->get("articleFactory")->getId($path);
-        $title = "testkommentarer";
-        $comments = $this->di->get("comm")->getComments($id);
-        $form = $this->di->get("commAssembler")->getForm($id, $path);
-        $filtereddata = $this->di->get("articleFactory")->getFilteredHTML($id);
-        $hasComments = ($comments == null) ? false : true;
 
-        $data = [
-            "article" => $filtereddata,
-            "form" => $form,
-            "comments" => $comments,
-            "hasComments" => $hasComments,
-            "path" => $path,
-            "id" => $id
-        ];
-
-        $view->add("commentary/article", $data);
-        $this->di->get("pageRender")->renderPage(["title" => $title]);
-    }
 
     /**
      * Books landing page.
@@ -216,13 +692,13 @@ class CommController implements InjectionAwareInterface
             "form" => $form->getHTML(),
         ];
 
-        $view->add("admin/admincreatecontent", $data);
+        $view->add("commentary/createarticle", $data);
 
         $pageRender->renderPage(["title" => $title]);
     }
 
     /**
-     * Handler with form to update an book.
+     * Handler with form to update a article.
      *
      * @return void
      */
@@ -236,11 +712,85 @@ class CommController implements InjectionAwareInterface
         $form->check();
 
         $data = [
-            "form" => $form->getHTML(),
+            "form"  => $form->getHTML(),
+            "id"    => $id
         ];
 
-        $view->add("admin/adminupdatecontent", $data);
+        $view->add("commentary/updatearticle", $data);
 
         $pageRender->renderPage(["title" => $title]);
+    }
+
+    /**
+     * Handler with form to update an answer.
+     *
+     * @return void
+     */
+    public function updateAnswer($articleid)
+    {
+        $title      = "Redigera innehåll | Maaa16";
+        $view       = $this->di->get("view");
+        $pageRender = $this->di->get("pageRender");
+        $response   = $this->di->get("response");
+        $request    = $this->di->get("request");
+        $artFact    = $this->di->get("articleFactory");
+
+        //---------------------------------------------------------
+
+        if ($this->checkUserRole()) {
+            //-- return ["article" => dbobj, "aritcledata" => markdown filtered data] --//
+            $article        = $artFact->getArticle($articleid);
+            $answerid       = ($request->getGet('answerid') != null) ? htmlentities($request->getGet('answerid')) : null;
+
+            $form           = new UpdateAnswerForm($this->di, $answerid, $articleid);
+            $form->check();
+
+            $data   = array();
+            $data   = [
+                "article"   => $article,
+                "form"      => $form->getHTML(),
+            ];
+
+            $view->add("commentary/updateanswer", $data);
+            $pageRender->renderPage(["title" => $title]);
+
+        } else {
+            $response->redirect("login");
+        }
+    }
+
+    /**
+     * Get to page with all tags.
+     *
+     * @return void
+     */
+    public function tagsPage()
+    {
+        $title          = "Taggar | Allt om jakt";
+        $view           = $this->di->get("view");
+        $pageRender     = $this->di->get("pageRender");
+        $comm           = $this->di->get("comm");
+
+        //---------------------------------------------------
+
+        $alltags        = $comm->getTags();
+        $tagbar         = $comm->getTagBar('5');
+        $tagcloud       = $comm->getTagCloud();
+
+        $data = [
+            "alltags"       => $alltags,
+            "tagbar"        => $tagbar,
+            "tagcloud"      => $tagcloud,
+        ];
+
+        $view->add("commentary/tags", $data);
+        $pageRender->renderPage(["title" => $title]);
+    }
+
+
+
+    public function checkUserRole()
+    {
+        return ($this->di->get("session")->get("role") == "user" || $this->di->get("session")->get("role") == "admin") ? true : false;
     }
 }
