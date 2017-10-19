@@ -9,53 +9,110 @@ class CommentaryTest extends \PHPUnit_Framework_TestCase
     // /**
     //  * Test case Commentary
     //  */
-    // public function testCommInsert()
+    public function testGetArticle()
+    {
+        // DI
+        $di  = new \Anax\DI\DIFactoryConfig("di.php");
+
+        // Commentary
+        $comm = new \Maaa16\Commentary\Commentary();
+        $comm->setDI($di);
+
+        $artFact = new \Maaa16\Commentary\ArticleFactory();
+        $artFact->setDI($di);
+
+
+
+        // Get comments before change
+        $res = $artFact->getArticle(1);
+
+
+        // Kollar att differensen mellan antalet är 1
+        $this->assertEquals($res['article']->title, 'testarticletitle');
+    }
+
+    public function testSlugify()
+    {
+        $di         = new \Anax\DI\DIFactoryConfig("di.php");
+        $artfact    = $di->get("articleFactory");
+
+        //-------------------------------------------------------
+
+        $inputslug   = "åäö åäö";
+        // $inputslugtwo   = "åäö åäö"
+        // $outputslugone  = "aao aao";
+        // $outputslugtwo  = "aao aao2";
+
+        $outputslugone = $artfact->slugify($inputslug);
+        // $outputslugtwo = $artfact->slugify($inputslug);
+
+        $this->assertEquals($outputslugone, "aaoaao");
+        // $this->assertEquals($outputslugtwo, "aaoaao2");
+    }
+
+    public function testSlugifyUTF8()
+    {
+        $di         = new \Anax\DI\DIFactoryConfig("di.php");
+        $artfact    = $di->get("articleFactory");
+
+        //-------------------------------------------------------
+
+        $inputslug   = "åäö åäö- ";
+        // $inputslugtwo   = "åäö åäö"
+        // $outputslugone  = "aao aao";
+        // $outputslugtwo  = "aao aao2";
+
+        $outputslugone = $artfact->slugifytagnameUTF8($inputslug);
+        // $outputslugtwo = $artfact->slugify($inputslug);
+
+        $this->assertEquals($outputslugone, "åäöåäö");
+        // $this->assertEquals($outputslugtwo, "aaoaao2");
+    }
+
+    public function testTagExists()
+    {
+        $di         = new \Anax\DI\DIFactoryConfig("di.php");
+        $comm = new \Maaa16\Commentary\Commentary();
+        $comm->setDI($di);
+
+        //-------------------------------------------------------
+
+        $tag = "töst";
+        // $inputslugtwo   = "åäö åäö"
+        // $outputslugone  = "aao aao";
+        // $outputslugtwo  = "aao aao2";
+
+        // $comm->tagExists($tag);
+        // $outputslugtwo = $artfact->slugify($inputslug);
+        $true = $comm->tagExists($tag);
+        $this->assertTrue($true);
+        // $this->assertEquals($outputslugtwo, "aaoaao2");
+    }
+
+    // public function testAddToExistingTag()
     // {
-    //     // DI
-    //     $di  = new \Anax\DI\DIFactoryConfig("di.php");
-    //
-    //     // Commentary
+    //     $di         = new \Anax\DI\DIFactoryConfig("di.php");
     //     $comm = new \Maaa16\Commentary\Commentary();
     //     $comm->setDI($di);
     //
-    //     // Get comments before change
-    //     $resbefore = $comm->getComment();
-    //     $numberbefore = count($resbefore);
-    //
-    //     // insert one comment
-    //     $commentOn = 1;
-    //     $username = 'user';
-    //     $email = 'user@email.com';
-    //     $comment = 'En kommentar';
-    //     $comm->addComment($commentOn, $username, $email, $comment);
-    //
-    //     // Get comments before change
-    //     $resafter = $comm->getComment();
-    //     $numberafter = count($resafter);
-    //
-    //     // Differense numberafter - numberbefore
-    //     $diffnumber = intval($numberafter) - intval($numberbefore);
-    //
-    //     // Kollar att differensen mellan antalet är 1
-    //     $this->assertEquals($diffnumber, 1);
-    // }
-
-    // public function testSlugify()
-    // {
-    //     $di         = new \Anax\DI\DIFactoryConfig("di.php");
-    //     $artfact    = $di->get("articleFactory");
-    //
     //     //-------------------------------------------------------
     //
-    //     $inputslug   = "åäö åäö";
-    //     // $inputslugtwo   = "åäö åäö"
-    //     // $outputslugone  = "aao aao";
-    //     // $outputslugtwo  = "aao aao2";
+    //     $db = new \Anax\Database\DatabaseQueryBuilder();
+    //     $db->configure("databaseconfig.php");
+    //     $db->connect();
     //
-    //     $outputslugone = $artfact->slugify($inputslug);
-    //     // $outputslugtwo = $artfact->slugify($inputslug);
+    //     $sql = "SELECT tagcount FROM RVIXtags WHERE tag = 'töst'";
+    //     $resbefore = $db->executeFetchAll($sql);
     //
-    //     $this->assertEquals($outputslugone, "aaoaao");
+    //     $tag = "töst";
+    //     $comm->addToExistingTag($tag);
+    //
+    //     $sql = "SELECT tagcount FROM RVIXtags WHERE tag = 'töst'";
+    //     $resafter = $db->executeFetchAll($sql);
+    //
+    //     $diff = intval($resafter[0]->tagcount) - intval($resbefore[0]->tagcount);
+    //
+    //     $this->assertEquals($diff, 1);
     //     // $this->assertEquals($outputslugtwo, "aaoaao2");
     // }
 

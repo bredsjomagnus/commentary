@@ -35,9 +35,9 @@ class Commentary implements InjectionAwareInterface
         $res = $db->executeFetchAll($sql);
 
         $articlearray = [];
-        foreach($res as $article) {
+        foreach ($res as $article) {
             $articletagpaths = explode(", ", $article->tagpaths);
-            if(in_array($tagpath, $articletagpaths) || $tagpath == 'alla') {
+            if (in_array($tagpath, $articletagpaths) || $tagpath == 'alla') {
                 $articlearray[$article->id] = [
                     "id"        => $article->id,
                     "user"      => $article->user,
@@ -480,7 +480,7 @@ class Commentary implements InjectionAwareInterface
 
         $db->connect();
 
-        $sql = "SELECT * FROM RVIXtags WHERE BINARY tag = BINARY ?";
+        $sql = "SELECT * FROM RVIXtags WHERE tag = ?";
         $params = [$tag];
         $res = $db->executeFetchAll($sql, $params);
 
@@ -494,7 +494,7 @@ class Commentary implements InjectionAwareInterface
         $db     = $this->di->get("db");
         $db->connect();
 
-        $sql = "UPDATE RVIXtags SET tagcount = tagcount + 1 WHERE BINARY tag = BINARY ?";
+        $sql = "UPDATE RVIXtags SET tagcount = tagcount + 1 WHERE tag = ?";
         $params = [$tag];
         $db->execute($sql, $params);
     }
@@ -539,7 +539,7 @@ class Commentary implements InjectionAwareInterface
         //----------------------------------------------
 
         $db->connect();
-        if($limiter == 'nolimit') {
+        if ($limiter == 'nolimit') {
             $limit = "";
         } else {
             $limit = "LIMIT ".intval($limiter);
@@ -562,10 +562,12 @@ class Commentary implements InjectionAwareInterface
         $tags       = $this->getTags($limiter);
 
         $tagbar     = "<div class='btn-group' role='group' aria-label='...'>
-                        <span class='small'>Se: </span><a class='tags' href='".$url->create('commentary/articles/alla')."'>Alla</a> -
+                        <span class='small'>Se: </span><a class='tags'
+                        href='".$url->create('commentary/articles/alla')."'>Alla</a> -
                         <span class='small'>Populära taggar: </span>";
         foreach ($tags as $tag) {
-            $tagbar .=      "<a class='tags' href='".$url->create('commentary/articles/'.$tag->tagpath)."'>".$tag->tag."</a>&nbsp;";
+            $tagbar .=      "<a class='tags' href=
+                            '".$url->create('commentary/articles/'.$tag->tagpath)."'>".$tag->tag."</a>&nbsp;";
         }
         $tagbar     .= "</div>";
 
@@ -586,9 +588,9 @@ class Commentary implements InjectionAwareInterface
         $tags = new Tags();
         $tags->setDb($db);
 
-        foreach($tags->findAll() as $tag) {
-            if(in_array($tag->tag, $trashtags)) {
-                if($tag->tagcount > 1) {
+        foreach ($tags->findAll() as $tag) {
+            if (in_array($tag->tag, $trashtags)) {
+                if ($tag->tagcount > 1) {
                     $tag->setDb($db);
                     $tag->tagcount = $tag->tagcount - 1;
                     $tag->save();
@@ -656,10 +658,11 @@ class Commentary implements InjectionAwareInterface
             //     $rotateclass = 'rotatetag';
             // }
 
-            $tagCloud .="<a href='".$url->create('commentary/articles/'.$row->tagpath)."'><div class='tagcloud tagstyle ".$sizeclass."'>".$row->tag."</div></a> ";
+            $tagCloud .="<a href='".$url->create('commentary/articles/'.$row->tagpath)."'>
+            <div class='tagcloud tagstyle ".$sizeclass."'>".$row->tag."</div></a> ";
 
 
-            if($counter % $newline == 0) {
+            if ($counter % $newline == 0) {
                 $tagCloud .= "<br />";
                 $newline = rand(3, 4);
                 $counter = 1;
@@ -694,7 +697,8 @@ class Commentary implements InjectionAwareInterface
     /**
     * Vote an articlecomment
     *
-    * @param array $votedata - ['articleid' => articleid, 'articlecommentid', 'authorid' => authorid, 'voterid' => voterid, 'vote' => vote]
+    * @param array $votedata - ['articleid' => articleid, 'articlecommentid',
+    * 'authorid' => authorid, 'voterid' => voterid, 'vote' => vote]
     */
     public function voteArticleComment($votedata)
     {
@@ -716,7 +720,8 @@ class Commentary implements InjectionAwareInterface
     /**
     * Vote an articlecomment
     *
-    * @param array $votedata - ['articleid' => articleid, 'answerid' => answerid, 'answercommentid' => answercommentid, 'authorid' => authorid, 'voterid' => voterid, 'vote' => vote]
+    * @param array $votedata - ['articleid' => articleid, 'answerid' => answerid,
+    * 'answercommentid' => answercommentid, 'authorid' => authorid, 'voterid' => voterid, 'vote' => vote]
     */
     public function voteAnswerComment($votedata)
     {
@@ -739,7 +744,8 @@ class Commentary implements InjectionAwareInterface
     /**
     * Vote an article
     *
-    * @param array $votedata - ['articleid' => articleid, 'answerid' => answerid, 'authorid' => authorid, 'voterid' => voterid, 'vote' => vote]
+    * @param array $votedata - ['articleid' => articleid, 'answerid' => answerid,
+    * 'authorid' => authorid, 'voterid' => voterid, 'vote' => vote]
     */
     public function voteAnswer($votedata)
     {
@@ -1312,7 +1318,11 @@ class Commentary implements InjectionAwareInterface
 
     public function utf8Filter($text)
     {
-        $text = preg_replace(['/&aring;{1}/', '/&auml;{1}/', '/&ouml;{1}/', '/&Aring;{1}/', '/&Auml;{1}/', '/&Ouml;{1}/'], ['å', 'ä', 'ö', 'Å', 'Ä', 'Ö'], $text);
+        $text = preg_replace(
+            ['/&aring;{1}/', '/&auml;{1}/', '/&ouml;{1}/', '/&Aring;{1}/', '/&Auml;{1}/', '/&Ouml;{1}/'],
+            ['å', 'ä', 'ö', 'Å', 'Ä', 'Ö'],
+            $text
+        );
 
         return $text;
     }

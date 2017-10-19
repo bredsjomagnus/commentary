@@ -148,7 +148,7 @@ class UpdateArticleForm extends FormModel
         $tagsarray = explode(", ", $tags);
 
         //-- Trimmar varje tag och filtrerar så att inga tomma tags kommer med.
-        $tagsarray = array_filter($tagsarray, function($value) {
+        $tagsarray = array_filter($tagsarray, function ($value) {
             $value = trim($value);
             return $value !== '';
         });
@@ -182,7 +182,6 @@ class UpdateArticleForm extends FormModel
         $tagpaths = [];
         $tagnames = [];
         foreach ($newtags as $tag) {
-
             if ($comm->tagExists($tag)) {
                 $comm->addToExistingTag($tag);
                 $tagpaths[] = $comm->getTagPath($tag);

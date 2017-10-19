@@ -108,11 +108,13 @@ class CommAssembler implements InjectionAwareInterface
 
 
         $form = "<form action='".$addcommenturl."' method='POST'>
-                    <textarea style='padding: 5px;' class='form-control' name='data' value='' data-provide='markdown' placeholder='Skriv svar här!' ".$disabled."></textarea>
+                    <textarea style='padding: 5px;' class='form-control' name='data'
+                    value='' data-provide='markdown' placeholder='Skriv svar här!' ".$disabled."></textarea>
                     <br />
                     <input type='hidden' name='user' value='".$session->get("userid")."'>
                     <input type='hidden' name='answerto' value='".$id."'>
-                    <input class='btn btn-default' type='submit' name='addanswerbtn' value='Lägg till svar' ".$disabled.">
+                    <input class='btn btn-default' type='submit'
+                    name='addanswerbtn' value='Lägg till svar' ".$disabled.">
                 </form>";
                 // <input type='submit' name='resetdbbtn' value='Rensa databas på kommentarer' ".$disabled.">
         return $form;

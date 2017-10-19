@@ -166,7 +166,7 @@ class CommController implements InjectionAwareInterface
 
 
 
-                if($comm->notEmpty($answerdata)){
+                if ($comm->notEmpty($answerdata)) {
                     $comm->addAnswer($answerdata);
                 }
 
@@ -195,7 +195,7 @@ class CommController implements InjectionAwareInterface
                     "data"      => htmlentities($request->getPost('data')),
                 ];
 
-                if($comm->notEmpty($articlecommentdata)){
+                if ($comm->notEmpty($articlecommentdata)) {
                     $comm->addArticleComment($articlecommentdata);
                 }
 
@@ -261,7 +261,6 @@ class CommController implements InjectionAwareInterface
 
             $this->di->get("view")->add("commentary/userinfo", $data);
             $this->di->get("pageRender")->renderPage(["title" => $title]);
-
         } else {
             $response->redirect("login");
         }
@@ -296,7 +295,6 @@ class CommController implements InjectionAwareInterface
 
             $comm->voteArticle($votedata);
             $response->redirect("commentary/article/".$articleid);
-
         } else {
             $response->redirect("login");
         }
@@ -314,7 +312,8 @@ class CommController implements InjectionAwareInterface
 
         if ($this->checkUserRole()) {
             $voterid            = $session->get("userid");
-            $articlecommentid   = ($request->getGet('articlecommentid') != null) ? htmlentities($request->getGet('articlecommentid')) : null;
+            $articlecommentid   = ($request->getGet('articlecommentid') != null) ?
+                                   htmlentities($request->getGet('articlecommentid')) : null;
             $vote               = ($request->getGet('vote') === 'up') ? 1 : -1;
 
             $session->set("vote", $request->getGet('vote'));
@@ -334,7 +333,6 @@ class CommController implements InjectionAwareInterface
             }
 
             $response->redirect("commentary/article/".$articleid);
-
         } else {
             $response->redirect("login");
         }
@@ -350,7 +348,8 @@ class CommController implements InjectionAwareInterface
         //---------------------------------------------------------
 
         if ($this->checkUserRole()) {
-            $articlecommentid   = ($request->getGet('articlecommentid') != null) ? htmlentities($request->getGet('articlecommentid')) : null;
+            $articlecommentid   = ($request->getGet('articlecommentid') != null) ?
+                                  htmlentities($request->getGet('articlecommentid')) : null;
             $voterid            = $session->get("userid");
 
             $votedata = array();
@@ -364,7 +363,6 @@ class CommController implements InjectionAwareInterface
             }
 
             $response->redirect("commentary/article/".$articleid);
-
         } else {
             $response->redirect("login");
         }
@@ -387,8 +385,10 @@ class CommController implements InjectionAwareInterface
             * in i RVIXanswervotes
             */
             $vote               = ($request->getGet('vote') === 'up') ? 1 : -1;
-            $answerid           = ($request->getGet('answerid') != null) ? htmlentities($request->getGet('answerid')) : null;
-            $authorid           = ($request->getGet('authorid') != null) ? htmlentities($request->getGet('authorid')) : null;
+            $answerid           = ($request->getGet('answerid') != null) ?
+                                  htmlentities($request->getGet('answerid')) : null;
+            $authorid           = ($request->getGet('authorid') != null) ?
+                                   htmlentities($request->getGet('authorid')) : null;
 
             $voterid            = $session->get("userid");
 
@@ -410,7 +410,6 @@ class CommController implements InjectionAwareInterface
 
 
             $response->redirect("commentary/article/".$articleid);
-
         } else {
             $response->redirect("login");
         }
@@ -428,8 +427,10 @@ class CommController implements InjectionAwareInterface
 
         if ($this->checkUserRole()) {
             $voterid            = $session->get("userid");
-            $answerid           = ($request->getGet('answerid') != null) ? htmlentities($request->getGet('answerid')) : null;
-            $answercommentid    = ($request->getGet('answercommentid') != null) ? htmlentities($request->getGet('answercommentid')) : null;
+            $answerid           = ($request->getGet('answerid') != null) ?
+                                  htmlentities($request->getGet('answerid')) : null;
+            $answercommentid    = ($request->getGet('answercommentid') != null) ?
+                                  htmlentities($request->getGet('answercommentid')) : null;
             $vote               = ($request->getGet('vote') === 'up') ? 1 : -1;
 
             $authorid           = $comm->getAnswerCommentsAuthor($answercommentid);
@@ -449,7 +450,6 @@ class CommController implements InjectionAwareInterface
             }
 
             $response->redirect("commentary/article/".$articleid);
-
         } else {
             $response->redirect("login");
         }
@@ -465,7 +465,8 @@ class CommController implements InjectionAwareInterface
         //---------------------------------------------------------
 
         if ($this->checkUserRole()) {
-            $answercommentid   = ($request->getGet('answercommentid') != null) ? htmlentities($request->getGet('answercommentid')) : null;
+            $answercommentid   = ($request->getGet('answercommentid') != null) ?
+                                 htmlentities($request->getGet('answercommentid')) : null;
             $voterid            = $session->get("userid");
 
             $votedata = array();
@@ -481,7 +482,6 @@ class CommController implements InjectionAwareInterface
             }
 
             $response->redirect("commentary/article/".$articleid);
-
         } else {
             $response->redirect("login");
         }
@@ -497,7 +497,6 @@ class CommController implements InjectionAwareInterface
         //---------------------------------------------------------
 
         if ($this->checkUserRole()) {
-
             $voterid            = $session->get("userid");
 
             $votedata = array();
@@ -508,7 +507,6 @@ class CommController implements InjectionAwareInterface
 
             $comm->cancelVoteArticle($votedata);
             $response->redirect("commentary/article/".$articleid);
-
         } else {
             $response->redirect("login");
         }
@@ -525,7 +523,8 @@ class CommController implements InjectionAwareInterface
         //---------------------------------------------------------
 
         if ($this->checkUserRole()) {
-            $answerid           = ($request->getGet('answerid') != null) ? htmlentities($request->getGet('answerid')) : null;
+            $answerid           = ($request->getGet('answerid') != null) ?
+                                  htmlentities($request->getGet('answerid')) : null;
             $voterid            = $session->get("userid");
 
             $votedata = array();
@@ -539,7 +538,6 @@ class CommController implements InjectionAwareInterface
             }
 
             $response->redirect("commentary/article/".$articleid);
-
         } else {
             $response->redirect("login");
         }
@@ -740,7 +738,8 @@ class CommController implements InjectionAwareInterface
         if ($this->checkUserRole()) {
             //-- return ["article" => dbobj, "aritcledata" => markdown filtered data] --//
             $article        = $artFact->getArticle($articleid);
-            $answerid       = ($request->getGet('answerid') != null) ? htmlentities($request->getGet('answerid')) : null;
+            $answerid       = ($request->getGet('answerid') != null) ?
+                              htmlentities($request->getGet('answerid')) : null;
 
             $form           = new UpdateAnswerForm($this->di, $answerid, $articleid);
             $form->check();
@@ -753,7 +752,6 @@ class CommController implements InjectionAwareInterface
 
             $view->add("commentary/updateanswer", $data);
             $pageRender->renderPage(["title" => $title]);
-
         } else {
             $response->redirect("login");
         }
@@ -791,6 +789,7 @@ class CommController implements InjectionAwareInterface
 
     public function checkUserRole()
     {
-        return ($this->di->get("session")->get("role") == "user" || $this->di->get("session")->get("role") == "admin") ? true : false;
+        return ($this->di->get("session")->get("role") == "user" ||
+                $this->di->get("session")->get("role") == "admin") ? true : false;
     }
 }

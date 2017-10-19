@@ -21,7 +21,7 @@ class ArticleFactory implements InjectionAwareInterface
         $str = str_replace(array('å','ä','ö'), array('a','a','o'), $str);
         $str = preg_replace('/[^a-z0-9-]/', '', $str);
         $str = trim(preg_replace('/-+/', '', $str), '');
-        if($unique) {
+        if ($unique) {
             $str = $this->makeSlugUnique(strlen($str), $str);
         }
         return $str;
