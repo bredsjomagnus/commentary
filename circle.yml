@@ -4,13 +4,13 @@ machine:
 
 
 
-test:
-    pre:
-    - make install
-    - make check
-
-    override:
-    - make test
+# test:
+#     pre:
+#     - make install
+#     - make check
+#
+#     override:
+#     - make test
 
 
 # notify:
